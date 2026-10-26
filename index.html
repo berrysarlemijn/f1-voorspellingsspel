@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>F1 Voorspellingsspel 2027</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0d1117;
+    color:white;
+}
+
+.header{
+    background:#ff1801;
+    padding:20px;
+    text-align:center;
+}
+
+.header h1{
+    margin:0;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    padding:30px;
+}
+
+.card{
+    background:#161b22;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 0 15px rgba(0,0,0,0.4);
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    margin-top:10px;
+    margin-bottom:15px;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    margin-top:10px;
+    background:#ff1801;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#d11400;
+}
+
+.result{
+    display:none;
+    margin-top:25px;
+}
+
+.linkbox{
+    background:#21262d;
+    padding:15px;
+    border-radius:8px;
+    margin-top:10px;
+    word-break:break-word;
+}
+
+.qr-container{
+    text-align:center;
+    margin-top:20px;
+}
+
+.qr-container img{
+    max-width:250px;
+}
+
+.invite-box{
+    margin-top:30px;
+    padding:20px;
+    background:#21262d;
+    border-radius:10px;
+}
+
+h2,h3,h4{
+    margin-top:0;
+}
+
+.small{
+    color:#c9d1d9;
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>🏁 F1 Voorspellingsspel 2027</h1>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Doe mee</h2>
+
+<p>
+Voorspel de Top 10 van iedere Grand Prix en Sprint Race.
+</p>
+
+<ul>
+<li>✅ Geen account nodig</li>
+<li>✅ Gratis deelname</li>
+<li>✅ Seizoensklassement</li>
+<li>✅ Sprint- en racepunten</li>
+</ul>
+
+<input
+    type="text"
+    id="playerName"
+    placeholder="Vul je naam in">
+
+<button onclick="registerPlayer()">
+    🚀 Meedoen
+</button>
+
+<div class="result" id="result">
+
+<h3>✅ Inschrijving gelukt</h3>
+
+<p>Jouw persoonlijke link:</p>
+
+<div class="linkbox" id="playerLink"></div>
+
+<button onclick="copyPersonalLink()">
+📋 Persoonlijke link kopiëren
+</button>
+
+<button onclick="shareWhatsAppPersonal()">
+💬 Persoonlijke link delen via WhatsApp
+</button>
+
+<div class="qr-container">
+
+<h4>Persoonlijke QR-code</h4>
+
+<img id="personalQR">
+
+</div>
+
+</div>
+
+<div class="invite-box">
+
+<h3>👥 Nodig andere deelnemers uit</h3>
+
+<p class="small">
+Deel deze algemene uitnodigingslink.
+</p>
+
+<div class="linkbox" id="inviteLink"></div>
+
+<button onclick="copyInviteLink()">
+📋 Uitnodigingslink kopiëren
+</button>
+
+<button onclick="shareInvite()">
+💬 Uitnodigen via WhatsApp
+</button>
+
+<div class="qr-container">
+
+<h4>QR-code uitnodigingslink</h4>
+
+<img id="inviteQR">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let personalLink = "";
+
+const inviteLink =
+window.location.origin + "/join";
+
+document.getElementById("inviteLink").textContent =
+inviteLink;
+
+document.getElementById("inviteQR").src =
+"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data="
++ encodeURIComponent(inviteLink);
+
+function generateUUID() {
+
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function(c) {
+
+        const r = Math.random() * 16 | 0;
+
+        const v = c === 'x'
+            ? r
+            : (r & 0x3 | 0x8);
+
+        return v.toString(16);
+
+    });
+
+}
+
+function registerPlayer() {
+
+    const name =
+    document.getElementById("playerName")
+    .value
+    .trim();
+
+    if(name === "") {
+
+        alert("Vul eerst je naam in.");
+
+        return;
+    }
+
+    const playerId =
+    generateUUID();
+
+    const player = {
+
+        id: playerId,
+        name: name,
+        createdAt: new Date()
+
+    };
+
+    localStorage.setItem(
+        "player",
+        JSON.stringify(player)
+    );
+
+    personalLink =
+        window.location.origin +
+        "/p/" +
+        playerId;
+
+    document.getElementById("playerLink")
+        .textContent = personalLink;
+
+    document.getElementById("personalQR")
+        .src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data="
+    + encodeURIComponent(personalLink);
+
+    document.getElementById("result")
+        .style.display = "block";
+
+}
+
+function copyPersonalLink() {
+
+    navigator.clipboard.writeText(personalLink);
+
+    alert("Persoonlijke link gekopieerd.");
+}
+
+function copyInviteLink() {
+
+    navigator.clipboard.writeText(inviteLink);
+
+    alert("Uitnodigingslink gekopieerd.");
+}
+
+function shareWhatsAppPersonal() {
+
+    if(!personalLink){
+
+        alert("Schrijf je eerst in.");
+
+        return;
+    }
+
+    const message =
+`🏁 F1 Voorspellingsspel 2027
+
+Ik doe mee aan het F1 voorspellingsspel.
+
+Mijn persoonlijke link:
+${personalLink}`;
+
+    window.open(
+        "https://wa.me/?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
+
+function shareInvite() {
+
+    const message =
+`🏁 F1 Voorspellingsspel 2027
+
+Voorspel iedere Grand Prix en Sprint Race.
+
+✅ Geen account nodig
+✅ Direct meedoen
+✅ Seizoensklassement
+
+Meld je aan via:
+
+${inviteLink}`;
+
+    window.open(
+        "https://wa.me/?text=" +
+        encodeURIComponent(message),
+        "_blank"
+    );
+
+}
+
+</script>
+
+</body>
+</html>
+``
